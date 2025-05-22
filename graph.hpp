@@ -171,8 +171,34 @@ johnsonAPSP(const Graph<T>& G) {
 template <typename T>
 std::vector<std::vector<T> >
 floydWarshallAPSP(const Graph<T>& G) {
-  std::ignore = G;
-  return {};
+  T inf = infinity<T>();
+  const int numVertices = G.size();
+  std::vector<std::vector<T>> distanceMatrix(numVertices, std::vector<T>(numVertices, inf));
+
+  // initialisation of distanceMatrix
+  for (int i = 0; i < numVertices; i++) {
+    distanceMatrix[i][i] = 0;
+    for (const auto& [j, weight] : G.neighbours(i)) {
+      distanceMatrix[i][j] = weight;
+    }
+  }
+
+  // implementation of floyd-warshall
+  // iterate through all of the pairs of vertices (i, j) and intermediate k vertex (outer-most loop) 
+  for (int k = 0; k < numVertices; k++) {
+    for (int i = 0; i < numVertices; i++) {
+      for (int j = 0; j < numVertices; j++) {
+        if (distanceMatrix[i][k] < inf && distanceMatrix[k][j] < inf) {
+          // check path through vertices (i, j) and if path through k is shorter
+          // if so, update the shortest distance
+          if (distanceMatrix[i][k] + distanceMatrix[k][j] < distanceMatrix[i][j]) {
+            distanceMatrix[i][j] = distanceMatrix[i][k] + distanceMatrix[k][j];
+          }
+        }
+      }
+    }
+  }
+  return distanceMatrix;
 }
 
 #endif      // GRAPH_HPP_
