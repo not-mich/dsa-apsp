@@ -132,8 +132,31 @@ T infinity() {
 // has a negative weight cycle here
 template <typename T>
 bool existsNegativeCycle(const Graph<T>& G) {
-  std::ignore = G;
-  return true;
+  T inf = infinity<T>();
+  const int numVertices = G.size();
+  std::vector<T> shortestDist (numVertices, 0);
+
+  // using Bellman-Ford's algorithm, repeat (Vertices - 1) times
+  // relax the edges, look for the shortest path, dist[v] > dist[u] + weight
+  for (int i = 0; i < numVertices; ++i) {
+    for (int u = 0; u < numVertices; ++u) {
+      for (const auto& [v, weight] : G.neighbours(u)) {
+        if (shortestDist[u] < inf && shortestDist[v] > shortestDist[u] + weight) {
+          shortestDist[v] = shortestDist[u] + weight;
+        }
+      }
+    }
+  }
+
+  // if there is a negative weight cycle and return true, otherwise false
+  for (int u = 0; u < numVertices; ++ u) {
+    for (const auto& [v, weight] : G.neighbours(u)) {
+      if (shortestDist[u] < inf && shortestDist[v] > shortestDist[u] + weight) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 // implement Johnson's APSP algorithm here
