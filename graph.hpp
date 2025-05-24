@@ -141,6 +141,8 @@ bool existsNegativeCycle(const Graph<T>& G) {
   for (int i = 0; i < numVertices; ++i) {
     for (int u = 0; u < numVertices; ++u) {
       for (const auto& [v, weight] : G.neighbours(u)) {
+        // check if the current distance of u is less than infinity (valid) and,
+        // if distance of v can be shorter if we go through vertex u
         if (shortestDist[u] < inf && shortestDist[v] > shortestDist[u] + weight) {
           shortestDist[v] = shortestDist[u] + weight;
         }
@@ -179,6 +181,9 @@ floydWarshallAPSP(const Graph<T>& G) {
   for (int i = 0; i < numVertices; i++) {
     distanceMatrix[i][i] = 0;
     for (const auto& [j, weight] : G.neighbours(i)) {
+      // matrix is only updated with the minimum weight if graph has multiple 
+      // edges between vertices i and j
+      if (weight >= distanceMatrix[i][j]) continue;
       distanceMatrix[i][j] = weight;
     }
   }
@@ -192,7 +197,7 @@ floydWarshallAPSP(const Graph<T>& G) {
           // check path through vertices (i, j) and if path through k is shorter
           // if so, update the shortest distance
           if (distanceMatrix[i][k] + distanceMatrix[k][j] < distanceMatrix[i][j]) {
-            distanceMatrix[i][j] = distanceMatrix[i][k] + distanceMatrix[k][j];
+            distanceMatrix[i][j] = distanceMatrix[i][k] + distanceMatrix[k][j];          
           }
         }
       }
