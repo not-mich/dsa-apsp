@@ -59,6 +59,9 @@
         "thread": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp",
-        "format": "cpp"
+        "format": "cpp",
+        "cstdarg": "cpp",
+        "numbers": "cpp",
+        "text_encoding": "cpp"
     }
 }

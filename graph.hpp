@@ -161,10 +161,36 @@ bool existsNegativeCycle(const Graph<T>& G) {
   return false;
 }
 
+// reference: https://www.geeksforgeeks.org/johnsons-algorithm/
 // implement Johnson's APSP algorithm here
 template <typename T>
 std::vector<std::vector<T> >
 johnsonAPSP(const Graph<T>& G) {
+  //T inf = infinity<T>();
+  const int numVertices = G.size();
+  const int newNumVertices = G.size() + 1;
+
+  // create a temporary graph with size numVertices + 1 (for a dummy vertex s)
+  Graph<T> tempGraph(newNumVertices);
+
+  // copy the original edges into the temp graph
+  for (int u = 0; u < numVertices; u++) {
+    for (const auto& [v, weight] : G.neighbours(u)) {
+      tempGraph.addEdge(u, v, weight);
+    }
+  }
+
+  // add edge weights of 0 to all other vertices 
+  for (int u = 0; u < numVertices; u++) {
+    tempGraph.addEdge(numVertices, u, 0);
+  }
+
+  // using Bellman-Ford algorithm to find the shortest path
+
+  // reweight edges: w(u,v) = w(u,v) + h(u) - h(v)
+
+  // since all weights are non-negative, using Dijkstra's algorithm to vertices for the reweighted graph
+  
   std::ignore = G;
   return {};
 }
