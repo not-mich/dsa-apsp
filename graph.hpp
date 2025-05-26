@@ -166,7 +166,7 @@ bool existsNegativeCycle(const Graph<T>& G) {
 template <typename T>
 std::vector<std::vector<T> >
 johnsonAPSP(const Graph<T>& G) {
-  //T inf = infinity<T>();
+  T inf = infinity<T>();
   const int numVertices = G.size();
   const int newNumVertices = G.size() + 1;
 
@@ -186,6 +186,29 @@ johnsonAPSP(const Graph<T>& G) {
   }
 
   // using Bellman-Ford algorithm to find the shortest path
+  // let vertexPotential be a vector to hold reweighted edges 
+  std::vector<T> vertexPotential(newNumVertices, inf);
+  vertexPotential[numVertices] = 0;
+
+  for (int i = 0; i < numVertices; ++i) {
+    for (int u = 0; u < numVertices; ++u) {
+      for (const auto& [v, weight] : tempGraph.neighbours(u)) {
+          if (vertexPotential[u] < inf && vertexPotential[v] > vertexPotential[u] + weight) {
+          vertexPotential[v] = vertexPotential[u] + weight;
+        }
+      }
+    }
+  }
+
+  // if there is a negative weight cycle, return an empty vector
+  // otherise, move one and reweight the edges
+  for (int u = 0; u < numVertices; ++ u) {
+    for (const auto& [v, weight] : tempGraph.neighbours(u)) {
+      if (vertexPotential[u] < inf && vertexPotential[v] > vertexPotential[u] + weight) {
+        return std::vector<std::vector<T>>();
+      }
+    }
+  }
 
   // reweight edges: w(u,v) = w(u,v) + h(u) - h(v)
 
