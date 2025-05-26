@@ -193,7 +193,7 @@ johnsonAPSP(const Graph<T>& G) {
   for (int i = 0; i < numVertices; ++i) {
     for (int u = 0; u < numVertices; ++u) {
       for (const auto& [v, weight] : tempGraph.neighbours(u)) {
-          if (vertexPotential[u] < inf && vertexPotential[v] > vertexPotential[u] + weight) {
+        if (vertexPotential[u] < inf && vertexPotential[v] > vertexPotential[u] + weight) {
           vertexPotential[v] = vertexPotential[u] + weight;
         }
       }
@@ -211,9 +211,31 @@ johnsonAPSP(const Graph<T>& G) {
   }
 
   // reweight edges: w(u,v) = w(u,v) + h(u) - h(v)
+  for (int u = 0; u < numVertices; u++) {
+    for (auto& [v, weight] : G.neighbours(u)) { 
+      T newWeight = weight + vertexPotential[u] - vertexPotential[v];
+      G.addEdge(u, v, newWeight);
+    }
+  }
 
   // since all weights are non-negative, using Dijkstra's algorithm to vertices for the reweighted graph
-  
+  std::vector<std::vector<T>> distanceMatrix(numVertices, std::vector<T>(numVertices, inf));
+
+  for (int start= 0; start < numVertices; start++) {
+    std::vector<T> distance(numVertices, inf); // stores minimum distances
+    distance[start] = 0;
+    using minPQ = std::pair<T, int>;
+    // delcare priority queue min-heap, storing distance and the vertex
+    std::priority_queue<minPQ, std::vector<minPQ>, std::greater<>> pq;
+
+    pq.push({0, start});
+
+    while (!pq.empty()) {
+      // relax all edges
+    }
+  }
+      
+ // transform weight of the path back to correspond to the orignal weights
   std::ignore = G;
   return {};
 }
