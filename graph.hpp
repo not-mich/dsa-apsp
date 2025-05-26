@@ -212,9 +212,9 @@ johnsonAPSP(const Graph<T>& G) {
 
   // reweight edges: w(u,v) = w(u,v) + h(u) - h(v)
   for (int u = 0; u < numVertices; u++) {
-    for (auto& [v, weight] : G.neighbours(u)) { 
+    for (auto& [v, weight] : tempGraph.neighbours(u)) { 
       T newWeight = weight + vertexPotential[u] - vertexPotential[v];
-      G.addEdge(u, v, newWeight);
+      tempGraph.addEdge(u, v, newWeight);
     }
   }
 
