@@ -162,6 +162,7 @@ bool existsNegativeCycle(const Graph<T>& G) {
 }
 
 // reference: https://www.geeksforgeeks.org/johnsons-algorithm/
+//            https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-greedy-algo-7/
 // implement Johnson's APSP algorithm here
 template <typename T>
 std::vector<std::vector<T> >
@@ -201,7 +202,7 @@ johnsonAPSP(const Graph<T>& G) {
   }
 
   // if there is a negative weight cycle, return an empty vector
-  // otherise, move one and reweight the edges
+  // otherise, move on and reweight the edges
   for (int u = 0; u < numVertices; ++ u) {
     for (const auto& [v, weight] : tempGraph.neighbours(u)) {
       if (vertexPotential[u] < inf && vertexPotential[v] > vertexPotential[u] + weight) {
@@ -231,13 +232,30 @@ johnsonAPSP(const Graph<T>& G) {
     pq.push({0, start});
 
     while (!pq.empty()) {
-      // relax all edges
+      // pop top elem (with smallest distance) from min heap
+      auto [currDistance, u] = pq.top();
+      pq.pop();
+
+      if (currDistance > distance[u]) continue;
+
+      // relax all edges for every nbour v of vertex u, 
+      for (const auto& [v, weight] : tempGraph.neighbours(u)) {
+        // if a shorter path is found, update distance, and push
+        if (distance[u] + weight < distance[v]) {
+          distance[v] = distance[u] + weight;
+          pq.push({distance[v], v});
+        }
+      }
+    }
+
+    // transform weight of the path back to correspond to the orignal weights
+    for (int v = 0; v < numVertices; v++) {
+      if (distance[v] < inf) {
+        distanceMatrix[start][v] = distance[v] + vertexPotential[v] - vertexPotential[start];
+      }
     }
   }
-      
- // transform weight of the path back to correspond to the orignal weights
-  std::ignore = G;
-  return {};
+  return distanceMatrix;   
 }
 
 // implement the Floyd-Warshall APSP algorithm here
