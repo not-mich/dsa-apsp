@@ -1,3 +1,7 @@
+// references: https://www.geeksforgeeks.org/johnsons-algorithm/
+//            https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-greedy-algo-7/
+//            https://www.cs.cmu.edu/afs/cs/academic/class/15451-s14/www/LectureNotes/lecture13.pdf
+
 #ifndef GRAPH_HPP_
 #define GRAPH_HPP_
 
@@ -161,8 +165,6 @@ bool existsNegativeCycle(const Graph<T>& G) {
   return false;
 }
 
-// reference: https://www.geeksforgeeks.org/johnsons-algorithm/
-//            https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-greedy-algo-7/
 // implement Johnson's APSP algorithm here
 template <typename T>
 std::vector<std::vector<T> >
@@ -192,7 +194,7 @@ johnsonAPSP(const Graph<T>& G) {
   vertexPotential[numVertices] = 0;
 
   for (int i = 0; i < numVertices; ++i) {
-    for (int u = 0; u < numVertices; ++u) {
+    for (int u = 0; u < newNumVertices; ++u) {
       for (const auto& [v, weight] : tempGraph.neighbours(u)) {
         if (vertexPotential[u] < inf && vertexPotential[v] > vertexPotential[u] + weight) {
           vertexPotential[v] = vertexPotential[u] + weight;
@@ -203,7 +205,7 @@ johnsonAPSP(const Graph<T>& G) {
 
   // if there is a negative weight cycle, return an empty vector
   // otherise, move on and reweight the edges
-  for (int u = 0; u < numVertices; ++ u) {
+  for (int u = 0; u < newNumVertices; ++ u) {
     for (const auto& [v, weight] : tempGraph.neighbours(u)) {
       if (vertexPotential[u] < inf && vertexPotential[v] > vertexPotential[u] + weight) {
         return std::vector<std::vector<T>>();
@@ -212,10 +214,11 @@ johnsonAPSP(const Graph<T>& G) {
   }
 
   // reweight edges: w(u,v) = w(u,v) + h(u) - h(v)
-  for (int u = 0; u < numVertices; u++) {
-    for (auto& [v, weight] : tempGraph.neighbours(u)) { 
+  Graph<T> edgeReweightedGraph(numVertices); // create new graph for reweighted edges
+  for (int u = 0; u < numVertices; ++u) {
+    for (auto& [v, weight] : G.neighbours(u)) { 
       T newWeight = weight + vertexPotential[u] - vertexPotential[v];
-      tempGraph.addEdge(u, v, newWeight);
+      edgeReweightedGraph.addEdge(u, v, newWeight);
     }
   }
 
@@ -239,7 +242,7 @@ johnsonAPSP(const Graph<T>& G) {
       if (currDistance > distance[u]) continue;
 
       // relax all edges for every nbour v of vertex u, 
-      for (const auto& [v, weight] : tempGraph.neighbours(u)) {
+      for (const auto& [v, weight] : edgeReweightedGraph.neighbours(u)) {
         // if a shorter path is found, update distance, and push
         if (distance[u] + weight < distance[v]) {
           distance[v] = distance[u] + weight;
