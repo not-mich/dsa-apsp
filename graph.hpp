@@ -196,7 +196,8 @@ johnsonAPSP(const Graph<T>& G) {
   for (int i = 0; i < numVertices; ++i) {
     for (int u = 0; u < newNumVertices; ++u) {
       for (const auto& [v, weight] : tempGraph.neighbours(u)) {
-        if (vertexPotential[u] < inf && vertexPotential[v] > vertexPotential[u] + weight) {
+        if (vertexPotential[u] < inf && 
+            vertexPotential[v] > vertexPotential[u] + weight) {
           vertexPotential[v] = vertexPotential[u] + weight;
         }
       }
@@ -207,14 +208,15 @@ johnsonAPSP(const Graph<T>& G) {
   // otherise, move on and reweight the edges
   for (int u = 0; u < newNumVertices; ++ u) {
     for (const auto& [v, weight] : tempGraph.neighbours(u)) {
-      if (vertexPotential[u] < inf && vertexPotential[v] > vertexPotential[u] + weight) {
+      if (vertexPotential[u] < inf && 
+          vertexPotential[v] > vertexPotential[u] + weight) {
         return std::vector<std::vector<T>>();
       }
     }
   }
 
   // reweight edges: w(u,v) = w(u,v) + h(u) - h(v)
-  Graph<T> edgeReweightedGraph(numVertices); // create new graph for reweighted edges
+  Graph<T> edgeReweightedGraph(numVertices); // new graph for reweighted edges
   for (int u = 0; u < numVertices; ++u) {
     for (auto& [v, weight] : G.neighbours(u)) { 
       T newWeight = weight + vertexPotential[u] - vertexPotential[v];
@@ -222,8 +224,10 @@ johnsonAPSP(const Graph<T>& G) {
     }
   }
 
-  // since all weights are non-negative, using Dijkstra's algorithm to vertices for the reweighted graph
-  std::vector<std::vector<T>> distanceMatrix(numVertices, std::vector<T>(numVertices, inf));
+  // since all weights are non-negative, using Dijkstra's algorithm to vertices 
+  // for the reweighted graph
+  std::vector<std::vector<T>> distanceMatrix(numVertices, 
+                                              std::vector<T>(numVertices, inf));
 
   for (int start= 0; start < numVertices; start++) {
     std::vector<T> distance(numVertices, inf); // stores minimum distances
@@ -254,7 +258,8 @@ johnsonAPSP(const Graph<T>& G) {
     // transform weight of the path back to correspond to the orignal weights
     for (int v = 0; v < numVertices; v++) {
       if (distance[v] < inf) {
-        distanceMatrix[start][v] = distance[v] + vertexPotential[v] - vertexPotential[start];
+        distanceMatrix[start][v] = distance[v] + vertexPotential[v] 
+                                   - vertexPotential[start];
       }
     }
   }
@@ -267,8 +272,8 @@ std::vector<std::vector<T> >
 floydWarshallAPSP(const Graph<T>& G) {
   T inf = infinity<T>();
   const int numVertices = G.size();
-  std::vector<std::vector<T>> distanceMatrix(numVertices, std::vector<T>(numVertices, inf));
-
+  std::vector<std::vector<T>> distanceMatrix(numVertices, 
+                                              std::vector<T>(numVertices, inf));
   // initialisation of distanceMatrix
   for (int i = 0; i < numVertices; i++) {
     distanceMatrix[i][i] = 0;
@@ -281,7 +286,8 @@ floydWarshallAPSP(const Graph<T>& G) {
   }
 
   // implementation of floyd-warshall
-  // iterate through all of the pairs of vertices (i, j) and intermediate k vertex (outer-most loop) 
+  // iterate through all of the pairs of vertices (i, j) and 
+  // intermediate k vertex (outer-most loop) 
   for (int k = 0; k < numVertices; k++) {
     for (int i = 0; i < numVertices; i++) {
       for (int j = 0; j < numVertices; j++) {
