@@ -255,7 +255,7 @@ johnsonAPSP(const Graph<T>& G) {
       }
     }
 
-    // transform weight of the path back to correspond to the orignal weights
+    // transform weight of the path back to correspond to the original weights
     for (int v = 0; v < numVertices; v++) {
       if (distance[v] < inf) {
         distanceMatrix[start][v] = distance[v] + vertexPotential[v] 
